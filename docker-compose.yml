@@ -1,8 +1,8 @@
 version: '3'
 services:
-  python3:
+  scraping:
     build: .
-    container_name: 'python3'
+    container_name: 'scraping'
     tty: true
     volumes:
       - ./src:/root/src

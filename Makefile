@@ -1,5 +1,5 @@
 all:
-	docker exec -it python3 python scraping.py
+	docker exec -it scraping python scraping.py
 build:
 	docker-compose build --no-cache
 install:
@@ -9,10 +9,10 @@ up:
 ps:
 	docker-compose ps
 version:
-	docker exec -it python3 python --version
+	docker exec -it scraping python --version
 down:
 	docker-compose down
 bash:
-	docker-compose exec python3 bash
+	docker-compose exec scraping bash
 ls:
 	docker container ls
