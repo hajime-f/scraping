@@ -3,17 +3,13 @@ from datetime import timedelta as td
 import pandas as pd
 import sqlite3
 
-def fetch_close_price(ref_date, delta, code):
+def fetch_data(ref_date, code, column):
 
-    # 基準日(ref_date)からdelta日前の日を得る
-    ref_dt = dt.strptime(ref_date, '%Y-%m-%d') - td(days = delta)
-    m_date = ref_dt.strftime('%Y-%m-%d')
-    
-    query = f"SELECT * FROM DailyCandle WHERE code is {code} AND date > '{m_date}' ORDER BY date;"
+    query = f"SELECT {column} FROM DailyCandle WHERE code is {code} AND date > '{ref_date}' ORDER BY date;"
     conn = sqlite3.connect('stocks.db')
     with conn:
         df = pd.read_sql_query(query, conn)
-    return df['close']
+    return df
 
 
 # def fetch_date(ref_date):
@@ -28,17 +24,16 @@ if __name__ == '__main__':
 
     for code in nikkei225:
 
-        # 75日移動平均
-        df_close75 = fetch_close_price(ref_date, 75, code)
-        m_ave75 = df_close75.rolling(window = 75).mean().dropna()
+        # 日付と終値をデータベースから取得する
+        df_date = fetch_data(ref_date, code, 'date')
+        df_close = fetch_data(ref_date, code, 'close')
         
-        # 25日移動平均
-        df_close25 = fetch_close_price(ref_date, 25, code)
-        m_ave25 = df_close75.rolling(window = 25).mean().dropna()
-        
-        # 5日移動平均
-        df_close5 = fetch_close_price(ref_date, 5, code)
-        m_ave5 = df_close75.rolling(window = 5).mean().dropna()
+        # 移動平均をそれぞれ計算する
+        m_ave75 = df_close.rolling(window = 75).mean().dropna()
+        m_ave25 = df_close.rolling(window = 25).mean().dropna()
+        m_ave05 = df_close.rolling(window =  5).mean().dropna()
+
+        m_data = pd.concat([df_date, df_close, m_ave75, m_ave25, m_ave05], axis='columns', join='inner')
         
         
         
