@@ -12,9 +12,12 @@ def fetch_data(ref_date, code, column):
     return df
 
 
-# def fetch_date(ref_date):
+def is_golden_position(row_data, flag):
     
-    
+    if (row_data['close'] > row_data['m05'] > row_data['m25'] > row_data['m75']) and not flag:
+        return True, row_data['date']
+    else:
+        return False, row_data['date']
     
     
 if __name__ == '__main__':
@@ -25,7 +28,7 @@ if __name__ == '__main__':
     for code in nikkei225:
 
         # 日付と終値をデータベースから取得する
-        df_date = fetch_data(ref_date, code, 'date')
+        df_date = fetch_data(ref_date, code, 'date, open, high, low')
         df_close = fetch_data(ref_date, code, 'close')
         
         # 移動平均をそれぞれ計算する
@@ -33,9 +36,20 @@ if __name__ == '__main__':
         m_ave25 = df_close.rolling(window = 25).mean().dropna()
         m_ave05 = df_close.rolling(window =  5).mean().dropna()
 
+        # データを結合してカラム名を整える
         m_data = pd.concat([df_date, df_close, m_ave75, m_ave25, m_ave05], axis='columns', join='inner')
+        m_data.columns = ['date', 'open', 'high', 'low', 'close', 'm75', 'm25', 'm05']
         
+        start_index = m_data.head(1).index[0]
+        end_index = m_data.tail(1).index[0]
+        flag = False
+        flag_tmp = False
         
-        
+        for n in range(start_index, end_index + 1):
+            flag_tmp, f_date = is_golden_position(m_data.loc[n], flag)
+            if flag_tmp != flag:
+                print(f_date)
+            flag = flag_tmp
+
         breakpoint()
         
