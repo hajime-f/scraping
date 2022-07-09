@@ -12,12 +12,18 @@ def fetch_data(ref_date, code, column):
     return df
 
 
-def is_golden_position(row_data, flag):
+def is_golden_position(row_data, m_flag, d_flag):
     
-    if (row_data['close'] > row_data['m05'] > row_data['m25'] > row_data['m75']) and not flag:
-        return True, row_data['date']
+    if (row_data['m05'] > row_data['m25'] > row_data['m75']) and not m_flag and not d_flag:
+        return True, True, row_data['date']
+    elif (row_data['m05'] > row_data['m25'] > row_data['m75']) and not m_flag and d_flag:
+        return False, False, row_data['date']
+    elif (row_data['m05'] > row_data['m25'] > row_data['m75']) and m_flag and d_flag:
+        return True, False, row_data['date']
+    elif (row_data['m05'] > row_data['m25'] > row_data['m75']) and m_flag and not d_flag:
+        return True, False, row_data['date']
     else:
-        return False, row_data['date']
+        return False, False, row_data['date']
     
     
 if __name__ == '__main__':
@@ -42,14 +48,14 @@ if __name__ == '__main__':
         
         start_index = m_data.head(1).index[0]
         end_index = m_data.tail(1).index[0]
-        flag = False
-        flag_tmp = False
+        m_flag = False
+        d_flag = False
         
         for n in range(start_index, end_index + 1):
-            flag_tmp, f_date = is_golden_position(m_data.loc[n], flag)
-            if flag_tmp != flag:
+            m_flag, d_flag, f_date = is_golden_position(m_data.loc[n], m_flag, d_flag)
+            if d_flag:
                 print(f_date)
-            flag = flag_tmp
+                d_flag = False
 
         breakpoint()
         
