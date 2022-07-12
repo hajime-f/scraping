@@ -1,4 +1,6 @@
 all:
+	docker exec -it scraping python detect.py
+test:
 	docker exec -it scraping python backtest.py
 data:
 	docker exec -it scraping python scraping.py
