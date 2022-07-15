@@ -14,6 +14,21 @@ def fetch_data(ref_date, code, column):
     return df
 
 
+def is_golden_position(m_ave75, m_ave25, m_ave05, m_flag, d_value):
+    
+    if (m_ave05 > m_ave25 > m_ave75) and not m_flag and (d_value == 0):
+        return True, 1
+    elif (m_ave05 > m_ave25 > m_ave75) and m_flag and (d_value == 1):
+        return True, 0
+    elif (m_ave05 > m_ave25 > m_ave75) and m_flag and (d_value == 0):
+        return True, 0
+    else:
+        if m_flag and (d_value == 0):
+            return False, 2
+        else:
+            return False, 0
+
+
 def prepare_data(ref_date):
     
     data = []
@@ -47,29 +62,27 @@ def prepare_data(ref_date):
     return data
 
 
-def is_golden_position(row_data, m_flag, d_flag):
-    
-    if (row_data['m05'] > row_data['m25'] > row_data['m75']) and not m_flag and (d_flag == 0):
-        return True, 1, row_data['date']
-    elif (row_data['m05'] > row_data['m25'] > row_data['m75']) and m_flag and (d_flag == 1):
-        return True, 0, row_data['date']
-    elif (row_data['m05'] > row_data['m25'] > row_data['m75']) and m_flag and (d_flag == 0):
-        return True, 0, row_data['date']
-    else:
-        if m_flag and (d_flag == 0):
-            return False, 2, row_data['date']
-        else:
-            return False, 0, row_data['date']
-
-
 if __name__ == '__main__':
 
     # データを用意する
     data = prepare_data('2019-01-01')
     
     for code, m_data in zip(nikkei225, data):
-
+        
+        m_flag = False
+        d_value = 0
+        
         for p_dt in m_data:
-            
-            print(p_dt)
 
+            m_flag, d_value = is_golden_position(p_dt[2], p_dt[3], p_dt[4], m_flag, d_value)
+            
+            if d_value == 1:
+                print('+', code)
+            elif d_value == 2:
+                print('-', code)
+            else:
+                pass
+            
+            
+            
+            
