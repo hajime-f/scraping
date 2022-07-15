@@ -18,7 +18,7 @@ def prepare_data(ref_date):
     
     data = []
     
-    bar = tqdm(total = len(nikkei225))
+    bar = tqdm(total = len(nikkei225), dynamic_ncols = True, iterable = True, leave = False)
     bar.set_description('データを取得しています')
     
     for code in nikkei225:
@@ -47,8 +47,19 @@ def prepare_data(ref_date):
     return data
 
 
-
-
+def is_golden_position(row_data, m_flag, d_flag):
+    
+    if (row_data['m05'] > row_data['m25'] > row_data['m75']) and not m_flag and (d_flag == 0):
+        return True, 1, row_data['date']
+    elif (row_data['m05'] > row_data['m25'] > row_data['m75']) and m_flag and (d_flag == 1):
+        return True, 0, row_data['date']
+    elif (row_data['m05'] > row_data['m25'] > row_data['m75']) and m_flag and (d_flag == 0):
+        return True, 0, row_data['date']
+    else:
+        if m_flag and (d_flag == 0):
+            return False, 2, row_data['date']
+        else:
+            return False, 0, row_data['date']
 
 
 if __name__ == '__main__':
