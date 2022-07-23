@@ -74,8 +74,12 @@ if __name__ == '__main__':
         d_value = 0
         
         for p_dt in m_data:
-
-            m_flag, d_value = is_golden_position(p_dt[5], p_dt[6], p_dt[7], m_flag, d_value)
+            
+            m_ave75 = p_dt[5]  # 75日間移動平均値
+            m_ave25 = p_dt[6]  # 25日間移動平均値
+            m_ave05 = p_dt[7]  #  5日間移動平均値
+            
+            m_flag, d_value = is_golden_position(m_ave75, m_ave25, m_ave05, m_flag, d_value)
             
             if d_value == 1:
                 print('+', code)
