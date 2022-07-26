@@ -53,7 +53,7 @@ if __name__ == '__main__':
                                              'low': lowest_price,
                                              'close': close_price,
                                              'volume': volume,}
-        conn = sqlite3.connect('stocks.db')
+        conn = sqlite3.connect('/Users/hajime-f/Development/private/scraping/stocks.db')
         with conn:
             daily_candle_data.to_sql('DailyCandle', conn, if_exists='append', index=None)
         print(f'{nk} done.')
