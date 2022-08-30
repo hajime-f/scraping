@@ -33,6 +33,8 @@ if __name__ == '__main__':
     JST = timezone(timedelta(hours = +9), 'JST')
     today = datetime.strptime(datetime.now(JST).strftime('%Y-%m-%d'), '%Y-%m-%d')
     # today = datetime.strptime('2022-07-12', '%Y-%m-%d')
+
+    position = [6506, 6952, 7912, 9503, 9735, 9602]
     
     for code in nikkei225:
 
@@ -57,9 +59,15 @@ if __name__ == '__main__':
         for n in range(start_index, end_index + 1):
             m_flag, d_flag, f_date = is_golden_position(m_data.loc[n], m_flag, d_flag)
             if (d_flag == 1) and (datetime.strptime(f_date, '%Y-%m-%d 00:00:00') == today):
-                print('+', code)
+                if code in position:
+                    print('*+', code)
+                else:
+                    print('+', code)
                 d_flag = 0
             elif (d_flag == 2) and (datetime.strptime(f_date, '%Y-%m-%d 00:00:00') == today):
-                print('-', code)
+                if code in position:
+                    print('*-', code)
+                else:
+                    print('-', code)
             else:
                 pass
